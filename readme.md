@@ -12,7 +12,7 @@ To complete the requirements a couple of assumptions were made
 - If there's fewer jobs available than the batch size, the batch size will be smaller
 - Batch processing errors are just logged
 - Graceful shutdown for termination by the system is not implemented. 
-- Shutdown will process all remaining jobs in one batch, disregarding the batch size requirements.
+- Shutdown will process all jobs according to the batch size/frequency requirements
 
 # Codebase
 
@@ -35,7 +35,7 @@ if err != nil {
 ```go
 jr, err := mb.Publish(struct{}{})
 if err != nil {
-    fmt.println("Publish() is failed. Is the microbatcher already shut down?")
+    fmt.println("Publish() is failed. Is the microbatcher is shut down?")
 }
 ```
 

@@ -1,7 +1,6 @@
 package microbatcher
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -46,7 +45,6 @@ func TestMicroBatchImplementation_Publish(t *testing.T) {
 	frequencyMs := 300
 	expectedBatches := 2
 	mock := &mockBatchProcessor{process: func(batch []Job) error {
-		fmt.Printf("Called batch processing with %v jobs, time is %s\n", len(batch), time.Now())
 		if len(batch) != batchSize {
 			t.Errorf("Batch size is excepted to be %d but instead is %d", batchSize, batch)
 		}
@@ -100,7 +98,6 @@ func TestMicroBatchImplementation_Publish_ReadAllMessagesAfterShutdown(t *testin
 	expectedJobs := 100
 	processedJobs := 0
 	mock := &mockBatchProcessor{process: func(batch []Job) error {
-		fmt.Printf("Called batch processing with %v jobs, time is %s\n", len(batch), time.Now())
 		processedJobs += len(batch)
 		return nil
 	}}
@@ -134,7 +131,6 @@ func TestMicroBatchImplementation_Publish_ProcessSingleMessage(t *testing.T) {
 	expectedJobs := 1
 	processedJobs := 0
 	mock := &mockBatchProcessor{process: func(batch []Job) error {
-		fmt.Printf("Called batch processing with %v jobs, time is %s\n", len(batch), time.Now())
 		processedJobs += len(batch)
 		return nil
 	}}
