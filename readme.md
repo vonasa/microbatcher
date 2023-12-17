@@ -35,11 +35,11 @@ if err != nil {
 ```go
 jr, err := mb.Publish(struct{}{})
 if err != nil {
-    fmt.println("Publish() is failed. Is the microbatcher is shut down?")
+    fmt.println("Publish() is failed. Is the microbatcher shut down?")
 }
 ```
 
-- To shut down and make sure that all remaining message
+- To send a shutdown signal and make sure that all remaining message are processed.
 ```go
 err := mb.Shutdown()
 if err != nil {

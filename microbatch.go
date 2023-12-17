@@ -8,7 +8,7 @@ import (
 )
 
 type JobResult struct {
-	time time.Time
+	timestamp time.Time
 }
 
 type Job any
@@ -16,11 +16,6 @@ type Job any
 // BatchProcessor is implemented by another library
 type BatchProcessor interface {
 	Process([]Job) error
-}
-
-type config struct {
-	batchSize   int
-	frequencyMs int
 }
 
 type MicroBatchProcessor interface {
@@ -38,8 +33,13 @@ type microBatchImplementation struct {
 	scheduler *time.Ticker
 }
 
+type config struct {
+	batchSize   int
+	frequencyMs int
+}
+
 // Create an instance of the MicroBatch processor.
-// batchSize - is desired batch size
+// batchSize - is a desired batch size
 // frequencyMs - how often the batch should be sent, in milliseconds
 // processor - is the implementation of the BatchProcessor interface
 func Create(batchSize, frequencyMs int, processor BatchProcessor) (MicroBatchProcessor, error) {
@@ -75,10 +75,10 @@ func (mb *microBatchImplementation) Publish(job Job) (*JobResult, error) {
 	go func() {
 		mb.queue <- job
 	}()
-	return &JobResult{time: time.Now()}, nil
+	return &JobResult{timestamp: time.Now()}, nil
 }
 
-// Shutdown blocks until all accepted messages are processed in accordance to the batch size/frequency
+// Shutdown stops accepting new messages and blocks until all already accepted messages are processed in accordance to the batch size/frequency
 // error is returned if called more than once
 func (mb *microBatchImplementation) Shutdown() error {
 	mb.mu.RLock()
@@ -105,8 +105,7 @@ func (mb *microBatchImplementation) startScheduler() {
 	}
 }
 
-// read jobs batch size worth. exit after frequency interval even when not enough jobs are in the batch for the full size
-// still sends the batch
+// read jobs batch size worth.
 func (mb *microBatchImplementation) packageJobs() {
 	var batch []Job
 out:
@@ -124,6 +123,7 @@ out:
 	mb.sendBatch(batch)
 }
 
+// send the batch for processing. implementation is a dependency
 func (mb *microBatchImplementation) sendBatch(batch []Job) {
 	if len(batch) != 0 {
 		if mb.processor.Process(batch) != nil {
